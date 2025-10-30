@@ -2,7 +2,7 @@
 
 ![Alt Text](Analysis/output/output_croppeds_.gif)
 
-**Illustration**: This gif demonstrates how extruders (yellow) are loaded at targets, and start extrusion.
+**Illustration**: This gif demonstrates how extruders (yellow) are loaded at targets, and start extrusion. The right panel shows a wider loading area, resulting in a 'boundary' because of the collision between extruders, while the left results in a fountain.
 <!--
 - **Left**: Lattice model showing a simulated genomic region (grey) with a long-lived barrier acting as an anchor (left site, red) and multiple downstream dynamic barrier positions (right three sites, red). The two genomic positions held together by the extruder is depicted with a light arch. If a barrier becomes unbound, an extruder blocked at this site can continue extruding. Note that CTCF can re-bind when the barrier is inside of an extruded loop.
 - **Right**: The consequence on 3D genome organization.-->
