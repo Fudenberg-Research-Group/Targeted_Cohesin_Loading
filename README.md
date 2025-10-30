@@ -58,8 +58,9 @@ Once the data is processed, observable features can be quantified, including:
 - Dots (loops between barriers)
 - Vermicelli (accumulation of extruders on axial structures)
 - P(s): contact frequency vs genomic distance-->
-- Extruders vs barrier reads
-See Jupyter notebooks in `./Analysis`.
+- Extruders vs barrier reads  
+  
+See Jupyter notebooks in `./Analysis`.  
 
 
 
