@@ -1,0 +1,31 @@
+{
+    "CTCF_facestall": [
+        1.0
+    ],
+    "CTCF_backstall": [
+        0.0
+    ],
+    "CTCF_lifetime": [
+        300
+    ],
+    "CTCF_offtime": [
+        180
+    ],
+    "LEF_lifetime": [
+        660
+    ],
+    "LEF_stalled_lifetime": [
+        660
+    ],
+    "LEF_birth": [
+        0.1
+    ],
+    "LEF_pause": [
+        0.9
+    ],
+    "LEF_separation": 75,
+    "sites_per_monomer": 10,
+    "number_of_replica": 10,
+    "velocity_multiplier": 1,
+    "steps": 20
+}

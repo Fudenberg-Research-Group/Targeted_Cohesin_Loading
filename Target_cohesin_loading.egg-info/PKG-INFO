@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: Target-cohesin-loading
+Version: 0.1.0
+Summary: Dynamic barriers lattice translocators for loop extrusion simulations
+Home-page: https://github.com/hrahmanin/Target_cohesin_loading/
+Author: Hadi Rahmaninejad
+Author-email: rahmanin@usc.edu
+License: MIT
+License-File: LICENSE
