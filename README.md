@@ -8,17 +8,17 @@
 - **Right**: The consequence on 3D genome organization.-->
 
 ### Description
-This GitHub repository contains tools for simulating chromatin loop extrusion with targeted loading loci using a dynamic model of CTCF.
+This GitHub repository contains tools for simulating chromatin loop extrusion with targeted loading loci for extruders, using a dynamic model of CTCF. 
 
 Preprint available here: <>
 
 
 ### Structure of the repository
 The structure of this repository follows as below:
-- Analysis: notebooks and code for analyzing simulations and experimental data. This includes:
-      - Target Cohesin Loading: Single site, Multiple site, and domains
-      - Sequential Barriers
-      - Realistic Distribution of Barriers
+- Analysis: notebooks and code for analyzing simulations and experimental data. This includes:  
+  - Target Cohesin Loading: Single site, multiple site, domains targets, and target loading with association rate  
+  - Sequential Barriers: Tandem configuration of barriers  
+  - Realistic Distribution of Barriers: Different scenarios with the random and regular configuration of barriers   
 - Scripts: codes for performing simulations, and quantitative analysis.
 - Target_Cohesin_Loading: accessory scripts for the simulations
   
