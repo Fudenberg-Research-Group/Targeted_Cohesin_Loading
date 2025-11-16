@@ -37,7 +37,7 @@ def make_CTCF_arrays(site_types,
     stall_right_array = make_site_array(site_types, CTCF_facestall, at_ids=CTCF_right_positions, **kwargs)
     
     stall_left_array += make_site_array(site_types, CTCF_backstall, at_ids=CTCF_right_positions, **kwargs)
-    stall_right_array += make_site_array(site_types, CTCF_backstall, at_idsids=CTCF_left_positions, **kwargs)
+    stall_right_array += make_site_array(site_types, CTCF_backstall, at_ids=CTCF_left_positions, **kwargs)
     
     return [stall_left_array, stall_right_array]
 
@@ -116,18 +116,6 @@ def make_translocator(extrusion_engine,
 
     return LEFTran
 
-#def paramdict_to_filename(paramdict, paramdict_keys):
-#    filename = 'file'
-#    for key, value in paramdict.items():
-#        short_key = paramdict_keys.get(key, key)  # fallback to key if not in paramdict_keys
-#        if isinstance(value, list):
-#            value_str = '_'.join(str(v) for v in value)
-#        else:
-#            value_str = str(value)
-#        filename += f'_{short_key}_{value_str}'
-#    
-#    filename = filename.replace('[', '').replace(']', '').replace(' ', '')
-#    return filename
 def paramdict_to_filename(paramdict, paramdict_keys=None):
     if paramdict_keys is None:
         paramdict_keys = {
@@ -153,12 +141,12 @@ def paramdict_to_filename(paramdict, paramdict_keys=None):
 
     filename = 'file'
     for key, value in paramdict.items():
-        short_key = paramdict_keys.get(key, key)  # fallback if not found
+        sxkey = paramdict_keys.get(key, key)  # fallback if not found
         if isinstance(value, list):
             value_str = '_'.join(str(v) for v in value)
         else:
             value_str = str(value)
-        filename += f'_{short_key}_{value_str}'
+        filename += f'_{sxkey}_{value_str}'
 
     # Remove characters that might interfere with file naming
     filename = filename.replace('[', '').replace(']', '').replace(' ', '')

@@ -1,3 +1,4 @@
+# This file represent the simulation for the general case of boosted loading at the center of lattice, with association rate, and dynamic barriers (CTCFs)
 # ===============================
 # Standard Library Imports
 # ===============================
@@ -25,8 +26,9 @@ import pandas as pd
 # Project-Specific Imports
 # ===============================
 from Target_cohesin_loading.lattice_translocators import LEFTranslocator, LEFTranslocatorDynamicBoundary
+# import the functions here
 import Target_cohesin_loading.funcs as funcs
-from Target_cohesin_loading.funcs import *
+from funcs import *
 
 # ===============================
 # Cooltools for Hi-C Analysis
@@ -46,18 +48,17 @@ from polychrom.simulation import Simulation
 from polychrom.starting_conformations import grow_cubic
 
 
-# Get filename from command-line argument
-#filename = sys.argv[-1]
-filename = 'folder_face_1.0_back_0_Clife_191.9_Cof_17.0_life_66.0_slife_66.0_birth_0.1_targetsnum_16_deltactcf_4600_pause_0.0_ipause_0.985_sep_74_site_10_monomer_1000_replica_1_steps_200.0_vel_1'
+# Get filename from command-line argument (the format is provided in the following lines)
+filename = sys.argv[-1] if len(sys.argv) > 1 else default_filename
+default_filename_ = 'folder_face_1.0_back_0_Clife_191.9_Cof_17.0_life_66.0_slife_66.0_birth_0.1_base_0.0001_targetsnum_16_deltactcf_4600_pause_0.0_ipause_0.985_sep_74_site_10_monomer_1000_replica_1_steps_200.0_vel_1'
 
 print(f'This is file name: {filename}')
 
 # Extract parameters from filename (if needed for logic)
 params = [ast.literal_eval(i) for i in filename.split('folder_')[1].split('_')[1::2]]
-face, back, clife, cof, life, slife, birth, targetsnum, deltactcf, pause, ipause, sep, site, monomer, replica, steps, vel = params
+face, back, clife, cof, life, slife, birth, base_loading, targetsnum, deltactcf, pause, ipause, sep, site, monomer, replica, steps, vel = params
 
 # Define only the main paramdict_CTCF
-base_loading = 0.0001
 paramdict_CTCF = {
     'CTCF_facestall': [face, face],
     'CTCF_backstall': [back, back],
@@ -99,18 +100,19 @@ number_of_replica = paramdict_CTCF['number_of_replica']
 total_sites = number_of_replica * sites_per_replica
 
 # Adjust LEF density and update paramdict
-paramdict_CTCF['LEF_separation'] = funcs.adjust_LEF_density(paramdict_CTCF, base_loading=0.0001)
+paramdict_CTCF['LEF_separation'] = funcs.adjust_LEF_density(paramdict_CTCF)
 print(paramdict_CTCF['LEF_separation'])
 
 # Determining the strong and base CTCF regions
 typedict = {'strong_CTCF':1, 'base_CTCF':0}
-target_site_num = targetsnum
-site_types[5000 - target_site_num//2: 5000+(1+target_site_num)//2] = typedict['strong_CTCF']
-site_types[:5000 - target_site_num//2] = site_types[5000+(1+target_site_num)//2:] = typedict['base_CTCF']
+target_site_num = targetsnum # number of loading sites on the lattice
+loadsite = total_sites//2 # The location of loading sites on lattice
+site_types[total_sites//2 - target_site_num//2: total_sites//2+(1+target_site_num)//2] = typedict['strong_CTCF']
+site_types[:total_sites//2 - target_site_num//2] = site_types[total_sites//2+(1+target_site_num)//2:] = typedict['base_CTCF']
 
 # CTCF boundary sites configuration 
-CTCF_right_positions = np.array([5001+(deltactcf//2)+1])
-CTCF_left_positions = np.array([5001-(deltactcf//2)])
+CTCF_right_positions = np.array([loadsite+(deltactcf//2)+1])
+CTCF_left_positions = np.array([loadsite-(deltactcf//2)])
 # ==========================================================
 ########### 1d simulation parameters for lattice ###########
 # ==========================================================

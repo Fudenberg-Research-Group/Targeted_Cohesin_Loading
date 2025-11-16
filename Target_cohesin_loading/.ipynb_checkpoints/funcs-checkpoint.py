@@ -63,6 +63,7 @@ def make_LEF_arrays(site_types,
                     LEF_stalled_lifetime,
                     LEF_birth,
                     LEF_pause,
+                    LEF_ipause,
                     sites_per_monomer,
                     velocity_multiplier,
                     **kwargs):
@@ -72,11 +73,12 @@ def make_LEF_arrays(site_types,
     
     birth_array = make_site_array(site_types, LEF_birth, **kwargs)
     pause_array = make_site_array(site_types, LEF_pause, **kwargs)
+    ipause_array = make_site_array(site_types, LEF_ipause, **kwargs)
     
     death_array = 1./ lifetime_array / (velocity_multiplier * sites_per_monomer)
     stalled_death_array = 1./ stalled_lifetime_array / (velocity_multiplier * sites_per_monomer)
 
-    return [death_array, stalled_death_array, birth_array, pause_array]
+    return [death_array, stalled_death_array, birth_array, pause_array, ipause_array]
 
 def make_translocator(extrusion_engine, 
                       site_types,
@@ -105,10 +107,8 @@ def make_translocator(extrusion_engine,
     
     CTCF_arrays = make_CTCF_arrays(site_types, CTCF_left_positions, CTCF_right_positions, **kwargs)
     CTCF_dynamic_arrays = make_CTCF_dynamic_arrays(site_types, **kwargs)
-    # pick what to forward
-    allowed_engine_kwargs = ['LEF_ipause', 'initalize_at_equilibrium_occupancy']
-    optional_args_for_engine = {key: kwargs[key] for key in allowed_engine_kwargs if key in kwargs}
-    LEFTran = extrusion_engine(number_of_LEFs, *LEF_arrays, *CTCF_arrays, *CTCF_dynamic_arrays, **optional_args_for_engine)
+
+    LEFTran = extrusion_engine(number_of_LEFs, *LEF_arrays, *CTCF_arrays, *CTCF_dynamic_arrays)
 
     if not isinstance(LEFTran, LEFTranslocatorDynamicBoundary):
         LEFTran.stallProbLeft = 1 - (1 - LEFTran.stallProbLeft) ** (1. / velocity_multiplier)
@@ -116,12 +116,55 @@ def make_translocator(extrusion_engine,
 
     return LEFTran
 
-def paramdict_to_filename(paramdictx,paramdict_keys):
+def paramdict_to_filename(paramdict, paramdict_keys=None):
+    if paramdict_keys is None:
+        paramdict_keys = {
+            'CTCF_facestall':'face',
+            'CTCF_backstall':'back',
+            'CTCF_lifetime':'clife',
+            'CTCF_offtime':'cof',
+            'CTCF_number':'cnum',
+            'LEF_lifetime':'life',
+            'LEF_stalled_lifetime':'slife',
+            'LEF_birth':'birth',
+            'targetsnum':'targetsnum',
+            'deltactcf':'deltactcf',
+            'LEF_ipause':'ipause',
+            'LEF_pause':'pause',
+            'LEF_separation':'sep',
+            'sites_per_monomer':'site',
+            'monomers_per_replica':'monomer',
+            'number_of_replica':'replica',
+            'steps':'steps',
+            'velocity_multiplier':'vel'
+        }
+
+    filename = 'file'
+    for key, value in paramdict.items():
+        short_key = paramdict_keys.get(key, key)  # fallback if not found
+        if isinstance(value, list):
+            value_str = '_'.join(str(v) for v in value)
+        else:
+            value_str = str(value)
+        filename += f'_{short_key}_{value_str}'
+
+    # Remove characters that might interfere with file naming
+    filename = filename.replace('[', '').replace(']', '').replace(' ', '')
+    return filename
+
+def adjust_LEF_density(paramdict, base_loading=0.0001):
+    """
+    Computes adjusted LEF_separation based on new loading on target.
+    Returns an integer value for the updated LEF_separation.
+    """
+    birth = paramdict['LEF_birth'][1] if isinstance(paramdict['LEF_birth'], list) else paramdict['LEF_birth']
+    monomers_per_replica = int(paramdict['monomers_per_replica'])
+    sites_per_monomer = int(paramdict['sites_per_monomer'])
+    number_of_replica = int(paramdict['number_of_replica'])
+
+    total_sites = monomers_per_replica * sites_per_monomer * number_of_replica
+    density_multiplier = 1 + (((birth - base_loading) / base_loading) / total_sites)
     
-    filename='file'
-    for i in range(len(paramdictx)):
-        filename += ('_'+paramdict_keys[list(paramdictx)[i][:]]+'_'+str(paramdictx[list(paramdictx)[i]]))
-    chars = ['[',']']
-    filename_new = ''.join(i for i in filename if not i in chars)    
-    return filename_new
+    return int(paramdict['LEF_separation'] / density_multiplier)
+
 
