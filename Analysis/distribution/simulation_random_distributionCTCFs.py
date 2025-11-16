@@ -13,15 +13,13 @@ from functools import partial
 # Add custom library path
 sys.path.append('/home1/rahmanin/start/polychrom/projects/Site_wise_occupancy/OccupancyInputCTCF/')
 
-# Import utility modules
-import OccupancyInputCTCF.utils as util
-import OccupancyInputCTCF.utils.plots as mplot
-import OccupancyInputCTCF.utils.convert as convert
-import OccupancyInputCTCF.utils.ml as ml
-import OccupancyInputCTCF.utils.makeparams as params
-import OccupancyInputCTCF.utils.One_d_simulation as simulation
-import OccupancyInputCTCF.utils.md_simulation as mdsimulation
-import OccupancyInputCTCF.utils.cmap_utils as utils_s
+# Import utility modules Targeted_cohesin_loading
+import Targeted_cohesin_loading.plots as mplot
+import Targeted_cohesin_loading.convert as convert
+import Targeted_cohesin_loading.makeparams as params
+import Targeted_cohesin_loading.One_d_simulation as simulation
+import Targeted_cohesin_loading.md_simulation as mdsimulation
+import Targeted_cohesin_loading.cmap_utils as utils_s
 import warnings
 warnings.filterwarnings('ignore')
 import time

@@ -25,9 +25,9 @@ import pandas as pd
 # ===============================
 # Project-Specific Imports
 # ===============================
-from Target_cohesin_loading.lattice_translocators import LEFTranslocator, LEFTranslocatorDynamicBoundary
+from Targeted_cohesin_loading.lattice_translocators import LEFTranslocator, LEFTranslocatorDynamicBoundary
 # import the functions here
-import Target_cohesin_loading.funcs as funcs
+import Targeted_cohesin_loading.funcs as funcs
 from funcs import *
 
 # ===============================
