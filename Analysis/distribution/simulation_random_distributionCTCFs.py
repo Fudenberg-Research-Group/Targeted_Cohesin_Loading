@@ -1,29 +1,25 @@
 import sys
 import os
 import json
-import bioframe
 from config import *
 import pandas as pd
 import h5py
 from scipy.stats import truncnorm
 import matplotlib.pylab as plt
 import numpy as np
-from OccupancyInputCTCF.utils.analysis import calculate_frip
 from cooltools.lib.numutils import adaptive_coarsegrain
 import multiprocessing as mp
 from functools import partial
 # Add custom library path
 sys.path.append('/home1/rahmanin/start/polychrom/projects/Site_wise_occupancy/OccupancyInputCTCF/')
 
-# Import utility modules
-import OccupancyInputCTCF.utils as util
-import OccupancyInputCTCF.utils.plots as mplot
-import OccupancyInputCTCF.utils.convert as convert
-import OccupancyInputCTCF.utils.ml as ml
-import OccupancyInputCTCF.utils.makeparams as params
-import OccupancyInputCTCF.utils.One_d_simulation as simulation
-import OccupancyInputCTCF.utils.md_simulation as mdsimulation
-import OccupancyInputCTCF.utils.cmap_utils as utils_s
+# Import utility modules Targeted_cohesin_loading
+import Targeted_cohesin_loading.plots as mplot
+import Targeted_cohesin_loading.convert as convert
+import Targeted_cohesin_loading.makeparams as params
+import Targeted_cohesin_loading.One_d_simulation as simulation
+import Targeted_cohesin_loading.md_simulation as mdsimulation
+import Targeted_cohesin_loading.cmap_utils as utils_s
 import warnings
 warnings.filterwarnings('ignore')
 import time
@@ -58,11 +54,11 @@ print("Step 1 complete. Output:", ctcf_bed_df)
 #print("Step 4 complete. Right barriers:", CTCF_right_positions, "Left barriers:", CTCF_left_positions)
 
 ##### adding the random implementation ######
-genome_length = 3*2.7 # Gbp
-tot_motifs = 55073
-occup_mean = 0.33182353
-ctcf_tot_number = 217000
-bound_fraction = 0.5
+genome_length = 3*2.7 # Gbp , the total genome length with averagely 3 copies
+tot_motifs = 55073 # Total number of CTCF motifs from JASPAR
+occup_mean = 0.33182353 # Average of CTCF site occupancy from Sonmezer data
+ctcf_tot_number = 217000 # Paper cited in manuscript, method section
+bound_fraction = 0.5 # Paper cited in manuscript, method section
 occup_mean_p = (ctcf_tot_number/3)*bound_fraction/tot_motifs
 multiplication = occup_mean_p/occup_mean
 ctcf_per_10_meg = (10*1e6 / (genome_length *1e9) * bound_fraction * ctcf_tot_number) / occup_mean
