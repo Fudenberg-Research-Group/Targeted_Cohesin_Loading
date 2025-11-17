@@ -50,6 +50,32 @@ def create_matrix(n, higher_value, lower_value):
     
     return matrix
 
+def Calculate_EOC_reads(paramdict, lefs_array, lst, window_size):
+    rep = paramdict['number_of_replica'] 
+    mon = paramdict['monomers_per_replica']
+    site = paramdict['sites_per_monomer']
+    mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
+    lst_t = []
+    for i in range(rep):
+        lst_t += list(np.array(lst)+i*mon*site)
+    lef_lefts = lefs_array[:,:,0].flatten()
+    lef_rights = lefs_array[:,:,1].flatten()
+    lef_positions = np.hstack((lef_lefts,lef_rights))
+    peak_monomers = utils_s.peak_positions(lst_t, window_sizes = np.arange(-window_size, (window_size)+1))
+    num_sites_t = mapN*rep
+    hist,edges = np.histogram(  lef_positions  , np.arange(num_sites_t+1) )
+    reads = np.sum(hist[peak_monomers])
+    return reads
+
+
+
+
+
+
+
+
+
+
 
 
 
