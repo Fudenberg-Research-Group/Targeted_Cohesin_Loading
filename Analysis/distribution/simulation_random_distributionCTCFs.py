@@ -20,7 +20,7 @@ import Targeted_cohesin_loading.makeparams as params
 import Targeted_cohesin_loading.One_d_simulation as simulation
 import Targeted_cohesin_loading.md_simulation as mdsimulation
 import Targeted_cohesin_loading.cmap_utils as utils_s
-import Targeted_cohesin_loading.utils as utils
+import Targeted_cohesin_loading.QuantMetrics as QuantMetrics
 import warnings
 warnings.filterwarnings('ignore')
 import time
