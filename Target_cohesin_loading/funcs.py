@@ -2,10 +2,6 @@ from lattice_translocators import LEFTranslocator, LEFTranslocatorDynamicBoundar
 
 import numpy as np
 
-from lattice_translocators import LEFTranslocator, LEFTranslocatorDynamicBoundary
-import numpy as np
-
-
 def make_site_array(site_types, 
                     values, 
                     at_ids=None, 
