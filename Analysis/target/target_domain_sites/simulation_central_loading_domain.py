@@ -207,12 +207,11 @@ with h5py.File(folder+"/LEFPositions.h5", mode='w') as myfile:
         #print(np.shape(dset[st:end]),np.shape(cur))
         ctcf_left_cur = np.array(ctcf_left_cur)
         dset[st:end] = cur
-        #print(np.shape(ctcf_right_cur),np.shape(dset_ctcf_positions_right[st:end]))
         dset_ctcf_positions_right[st:end] = ctcf_right_cur
         dset_ctcf_positions_left[st:end] = ctcf_left_cur
     myfile.attrs["N"] = N * paramdict_CTCF['sites_per_monomer']
     myfile.attrs["LEFNum"] = LEFNum
-'''
+
 ### Molecular dynamics simulaiton ###
 myfile = h5py.File(folder + "/LEFPositions.h5", mode='r')
 sites_per_monomer = paramdict['sites_per_monomer']
@@ -343,4 +342,6 @@ for iteration in range(simInitsTotal):
 reporter.dump_data()
 
 myfile.close()
-'''
+
+
+
