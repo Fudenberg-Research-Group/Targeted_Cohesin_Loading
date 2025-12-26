@@ -507,6 +507,45 @@ def chip_seq_from_ctcf(lef_file_path, site_number_per_replica):
         ctcfhist[elements] = ctcfhist[elements] / 2
 
     return ctcfhist
+def chip_seq_from_lef(lef_positions, site_number_per_replica, min_time=0):
+    """
+    Construct a ChIP-seq–like occupancy profile for LEFs from simulation trajectories.
+
+    This function aggregates left and right LEF positions across replicas and time,
+    starting from a specified minimum time point, and builds a histogram representing
+    LEF occupancy along genomic sites. Positions are wrapped using modulo to map
+    LEFs onto a single replica coordinate system.
+
+    Parameters
+    ----------
+    lef_positions : numpy.ndarray
+        Array of LEF positions with shape (time, replicas, 2), where the last
+        dimension corresponds to left and right LEF positions.
+
+    site_number_per_replica : int
+        Total number of genomic sites per replica, used to define histogram bins.
+
+    min_time : int, optional
+        Time index from which LEF positions are included in the aggregation.
+        This can be used to discard early transient dynamics (default is 0).
+
+    Returns
+    -------
+    numpy.ndarray
+        One-dimensional array of length `site_number_per_replica` representing
+        the aggregated LEF occupancy (ChIP-seq–like signal) across sites.
+    """
+    lef_lefts = lef_positions[min_time:, :, 0].flatten()
+    lef_rights = lef_positions[min_time:, :, 1].flatten()
+
+    lef_positions_aray = np.hstack((lef_lefts, lef_rights))
+
+    hist, hist_ary = np.histogram(
+        np.mod(lef_positions_aray, site_number_per_replica),
+        np.arange(0, site_number_per_replica, 1)
+    )
+
+    return hist
 
 
 
