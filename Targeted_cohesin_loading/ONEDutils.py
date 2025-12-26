@@ -420,6 +420,94 @@ def Calculate_EOC_Reads(paramdict, lefs_array, lst, window_size):
     reads = np.sum(hist[peak_monomers])
     return reads
 
+def peak_ratio_around(num_sites_t, lef_positions, peak_positions, neighbor_size):
+    """
+    Compute the ratio of LEF occupancy at peak positions relative to nearby non-peak positions.
+
+    This function builds a histogram of LEF positions across all sites and compares
+    the total occupancy at specified peak positions to the occupancy in a region
+    outside the peaks but within a neighboring window.
+
+    Parameters
+    ----------
+    num_sites_t : int
+        Total number of sites (used to define the histogram bins).
+
+    lef_positions : array-like
+        Positions of LEFs along the sites. Each value represents the site index
+        where a LEF is located.
+
+    peak_positions : array-like
+        Indices of sites considered as peaks.
+
+    neighbor_size : int
+        Size of the neighboring region used to define outside-peak positions.
+
+    Returns
+    -------
+    float
+        The ratio of total LEF counts at peak positions to total LEF counts
+        at outside-peak neighboring positions.
+    """
+    outside_peak_positions = np.arange(
+        np.max(peak_positions) + 3,
+        np.max(peak_positions + neighbor_size)
+    )
+    hist, edges = np.histogram(lef_positions, np.arange(num_sites_t + 1))
+    return np.sum(hist[peak_positions]) / np.sum(hist[outside_peak_positions])
+
+def chip_seq_from_ctcf(lef_file_path, site_number_per_replica):
+    """
+    Construct a ChIP-seq–like occupancy profile for CTCF sites from LEF simulation output.
+
+    This function reads CTCF binding information (left- and right-oriented sites)
+    from an HDF5 file, aggregates all occupied CTCF positions across replicas,
+    and builds a histogram representing CTCF occupancy along the genomic sites.
+    Sites that appear in both left- and right-oriented arrays are counted once
+    by averaging their contributions.
+
+    Parameters
+    ----------
+    lef_file_path : str
+        Path to the HDF5 file containing CTCF position and site datasets
+        (CTCF_positions_right, CTCF_positions_left, CTCF_sites_right,
+        CTCF_sites_left).
+
+    site_number_per_replica : int
+        Total number of genomic sites per replica, used to define histogram bins.
+
+    Returns
+    -------
+    numpy.ndarray
+        One-dimensional array of length `site_number_per_replica` representing
+        the aggregated CTCF occupancy (ChIP-seq–like signal) across sites.
+    """
+    ctcf_array_right = np.array(h5py.File(lef_file_path, 'r')['CTCF_positions_right'])
+    ctcf_array_left = np.array(h5py.File(lef_file_path, 'r')['CTCF_positions_left'])
+    ctcf_array_right_sites = np.array(h5py.File(lef_file_path, 'r')['CTCF_sites_right'])
+    ctcf_array_left_sites = np.array(h5py.File(lef_file_path, 'r')['CTCF_sites_left'])
+
+    ctcfrightary = np.concatenate(
+        [arr.flatten() * ctcf_array_right_sites for arr in ctcf_array_right if arr.size > 0]
+    )
+    ctcfleftary = np.concatenate(
+        [arr.flatten() * ctcf_array_left_sites for arr in ctcf_array_left if arr.size > 0]
+    )
+
+    ctcfs = np.concatenate(
+        [ctcfrightary[ctcfrightary > 0], ctcfleftary[ctcfleftary > 0]]
+    )
+
+    ctcfhist, hist_array = np.histogram(
+        ctcfs, np.arange(0, site_number_per_replica, 1)
+    )
+
+    common_list = np.intersect1d(ctcf_array_right_sites, ctcf_array_left_sites)
+    for elements in common_list:
+        ctcfhist[elements] = ctcfhist[elements] / 2
+
+    return ctcfhist
+
 
 
 
