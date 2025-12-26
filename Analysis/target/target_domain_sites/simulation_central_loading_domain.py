@@ -109,7 +109,7 @@ monomer_types = np.zeros(monomers_per_replica, dtype=int)
 site_types = np.repeat(monomer_types, sites_per_monomer)
 number_of_replica = paramdict_CTCF['number_of_replica']
 total_sites = number_of_replica * sites_per_replica
-
+loadsite = total_sites//2
 
 # modifying density based on new loading on target
 target_site_num = int(deltactcf)
@@ -120,11 +120,9 @@ print(paramdict_CTCF['LEF_separation'])
 
 # Let's make some strong and weak CTCF regions
 typedict = {'strong_CTCF':1, 'weak_CTCF':0}
-#target_site_num = targetsnum
-site_types[5001-(deltactcf//2):5001+(deltactcf//2)+1] = typedict['strong_CTCF']
-#site_types[5000 - target_site_num//2: 5000+(1+target_site_num)//2] = typedict['strong_CTCF']
-#site_types[:5000 - target_site_num//2] = site_types[5000+(1+target_site_num)//2:] = typedict['weak_CTCF']
-site_types[:5001-(deltactcf//2)] = site_types [ 5001+(deltactcf//2)+1:] = typedict['weak_CTCF']
+
+site_types[loadsite-(deltactcf//2):loadsite+(deltactcf//2)+1] = typedict['strong_CTCF']
+site_types[:loadsite-(deltactcf//2)] = site_types [loadsite+(deltactcf//2)+1:] = typedict['weak_CTCF']
 
 # LEF/CTCF properties in type A monomers may be obtained from the paramdict as follows
 LEF_lifetime = paramdict_CTCF['LEF_lifetime'][1]
@@ -134,10 +132,10 @@ CTCF_offtime = paramdict_CTCF['CTCF_offtime']
 #print(CTCF_offtime[typedict['strong_CTCF']], CTCF_offtime[typedict['weak_CTCF']])
 
 # Create some CTCF boundary sites
-CTCF_right_positions = np.array([5001+(deltactcf//2)+1])
-CTCF_left_positions = np.array([5001-(deltactcf//2)])
-CTCF_sites_right = np.array([5001+(deltactcf//2)+1])
-CTCF_sites_left = np.array([5001-(deltactcf//2)])
+CTCF_right_positions = np.array([loadsite+(deltactcf//2)+1])
+CTCF_left_positions = np.array([loadsite-(deltactcf//2)])
+CTCF_sites_right = np.array([loadsite+(deltactcf//2)+1])
+CTCF_sites_left = np.array([loadsite-(deltactcf//2)])
 
 
 ########### 1d simulation parameters for lattice ###########
