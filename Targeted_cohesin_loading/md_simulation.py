@@ -123,9 +123,9 @@ def perform_md_simulation(lef_file_path, paramdict, paramdict_md):
     reporter.dump_data()
 
 
-def make_md_contact_maps(mapN, mapstarts, freq, min_time, input_path, cool_uri, coarsen=True):
+def make_md_contact_maps(mapN, mapstarts, freq, base_time, input_path, cool_uri, chunksize=10000000, BINSIZE_BP=2500, coarsen=True):
     URIs = polychrom.hdf5_format.list_URIs(input_path)
-    URIs_eq = np.array(URIs)[np.array([int(i.split("::")[-1]) for i in URIs]) > min_time][::freq]
+    URIs_eq = np.array(URIs)[np.array([int(i.split("::")[-1]) for i in URIs]) > base_time][::freq]
     cont_matrix = polychrom.contactmaps.monomerResolutionContactMapSubchains(
         URIs_eq,
         mapstarts,
@@ -134,15 +134,14 @@ def make_md_contact_maps(mapN, mapstarts, freq, min_time, input_path, cool_uri, 
         n=8)
     
     #saving data as .cool files
-    chunksize=10000000
     mrc_new = cms.coolify(cont_matrix,
             cool_uri,
             chrom_dict={},
-            binsize=2500,
+            binsize=BINSIZE_BP,
             chunksize=chunksize)
     
-    clr = cooler.Cooler(cool_uri+'.2500.cool')
-    base_uri = cool_uri+'.2500.cool'
+    clr = cooler.Cooler(cool_uri+'.%s.cool'%BINSIZE_BP)
+    base_uri = cool_uri+'.%s.cool'%BINSIZE_BP
     output_uri = cool_uri+'.10000.cool'
     if coarsen:
         factor = 4
