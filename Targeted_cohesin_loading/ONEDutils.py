@@ -4,7 +4,7 @@ import chromoscores.scorefunctions as chrscores
 from scipy.stats import pearsonr
 import numpy as np
 
-def region_data_frame(dataframe, region, lattice_size=250):
+def assign_lattice_positions(dataframe, region, lattice_size=250):
     """
     Extract and annotate genomic entries within a specified region.
 
