@@ -48,40 +48,110 @@ def assign_lattice_positions(dataframe, region, lattice_size=250):
     return region_dataframe
 
 
-def FRiP(num_sites_t, lef_positions, peak_positions):
-    """
-    Compute the Fraction of Reads in Peaks (FRiP) from LEF head positions.
+def fraction_of_reads_in_peaks(paramdict, lefs_array, lst, window_size):
+        """
+    Computes the relative number of LEF encounters (reads) around specified CTCF sites to the totla number of reads (Fraction of Reads in Peaks).
 
-    FRiP measures how many LEF positions fall inside a defined peak region.
-    It is the ratio between the number of LEF heads that lie within peak
-    indices and the total number of observed LEF head positions.
+    This function takes a list of CTCF positions for a single replica, expands them
+    across all replicas, and counts how many LEF positions (left or right heads)
+    fall within a given window around those sites.
 
     Parameters
     ----------
-    num_sites_t : int
-        Total number of lattice sites across all replicas.
-        Used to define histogram bin edges.
-    lef_positions : array-like
-        Flattened list of left and right LEF head positions (indices on the lattice).
-    peak_positions : array-like
-        Indices representing the window or peak region around a site
-        (e.g., ±window_size around CTCF). FRiP measures enrichment here.
+    paramdict : dict
+        Dictionary containing simulation parameters, including:
+            'number_of_replica'      – number of lattice replicas
+            'monomers_per_replica'   – monomers per replica
+            'sites_per_monomer'      – sites per monomer
+    lefs_array : ndarray, shape (replica, number_of_LEFs, 2)
+        Array containing LEF head positions.
+        lefs_array[:,:,0] = left heads
+        lefs_array[:,:,1] = right heads
+    lst : list or array
+        Positions of CTCF sites in a single replica.
+    window_size : int
+        Number of lattice sites to include on each side of the CTCF site
+        when counting LEF positions.
 
     Returns
     -------
-    frip_value : float
-        Fraction of all LEF positions that fall inside the peak region.
-        Computed as sum(hist[peak_positions]) / len(lef_positions).
+    reads : int
+        The relative number of of LEF located within ±window_size
+        of the CTCF sites across all replicas.
 
     Notes
     -----
-    - Uses histogram binning for efficient counting.
-    - Higher FRiP indicates more LEF accumulation at peak regions.
+    - CTCF positions listed in `lst` are expanded across all replicas.
+    - The function counts *both* left and right LEF heads.
+    - Uses a histogram over the full lattice to efficiently count encounters.
     """
-    
-    hist,edges = np.histogram(lef_positions, np.arange(num_sites_t+1))
+    rep = paramdict['number_of_replica'] 
+    mon = paramdict['monomers_per_replica']
+    site = paramdict['sites_per_monomer']
+    mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
+    lst_t = []
+    for i in range(rep):
+        lst_t += list(np.array(lst)+i*mon*site)
+    lef_lefts = lefs_array[:,:,0].flatten()
+    lef_rights = lefs_array[:,:,1].flatten()
+    lef_positions = np.hstack((lef_lefts,lef_rights))
+    peak_monomers = peak_positions(lst_t, window_sizes = np.arange(-window_size, (window_size)+1))
+    num_sites_t = mapN*rep
+    hist,edges = np.histogram(  lef_positions  , np.arange(num_sites_t+1) )
     return np.sum(hist[peak_positions]) / len(lef_positions)
 
+def number_of_reads_per_peaks(paramdict, lefs_array, lst, window_size):
+        """
+    Computes the total number of LEF encounters (reads) around specified CTCF sites (Extruders On CTCF).
+
+    This function takes a list of CTCF positions for a single replica, expands them
+    across all replicas, and counts how many LEF positions (left or right heads)
+    fall within a given window around those sites.
+
+    Parameters
+    ----------
+    paramdict : dict
+        Dictionary containing simulation parameters, including:
+            'number_of_replica'      – number of lattice replicas
+            'monomers_per_replica'   – monomers per replica
+            'sites_per_monomer'      – sites per monomer
+    lefs_array : ndarray, shape (replica, number_of_LEFs, 2)
+        Array containing LEF head positions.
+        lefs_array[:,:,0] = left heads
+        lefs_array[:,:,1] = right heads
+    lst : list or array
+        Positions of CTCF sites in a single replica.
+    window_size : int
+        Number of lattice sites to include on each side of the CTCF site
+        when counting LEF positions.
+
+    Returns
+    -------
+    reads : int
+        Total number of LEF heads located within ±window_size
+        of the CTCF sites across all replicas.
+
+    Notes
+    -----
+    - CTCF positions listed in `lst` are expanded across all replicas.
+    - The function counts *both* left and right LEF heads.
+    - Uses a histogram over the full lattice to efficiently count encounters.
+    """
+    rep = paramdict['number_of_replica'] 
+    mon = paramdict['monomers_per_replica']
+    site = paramdict['sites_per_monomer']
+    mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
+    lst_t = []
+    for i in range(rep):
+        lst_t += list(np.array(lst)+i*mon*site)
+    lef_lefts = lefs_array[:,:,0].flatten()
+    lef_rights = lefs_array[:,:,1].flatten()
+    lef_positions = np.hstack((lef_lefts,lef_rights))
+    peak_monomers = peak_positions(lst_t, window_sizes = np.arange(-window_size, (window_size)+1))
+    num_sites_t = mapN*rep
+    hist,edges = np.histogram(  lef_positions  , np.arange(num_sites_t+1) )
+    reads = np.sum(hist[peak_monomers])
+    return reads
     
 def peak_positions(boundary_list, window_sizes=[1]):
     """
@@ -367,58 +437,6 @@ def create_matrix(n, higher_value, lower_value):
     return matrix
 
 
-def Calculate_EOC_Reads(paramdict, lefs_array, lst, window_size):
-        """
-    Computes the total number of LEF encounters (reads) around specified CTCF sites (Extruders On CTCF).
-
-    This function takes a list of CTCF positions for a single replica, expands them
-    across all replicas, and counts how many LEF positions (left or right heads)
-    fall within a given window around those sites.
-
-    Parameters
-    ----------
-    paramdict : dict
-        Dictionary containing simulation parameters, including:
-            'number_of_replica'      – number of lattice replicas
-            'monomers_per_replica'   – monomers per replica
-            'sites_per_monomer'      – sites per monomer
-    lefs_array : ndarray, shape (replica, number_of_LEFs, 2)
-        Array containing LEF head positions.
-        lefs_array[:,:,0] = left heads
-        lefs_array[:,:,1] = right heads
-    lst : list or array
-        Positions of CTCF sites in a single replica.
-    window_size : int
-        Number of lattice sites to include on each side of the CTCF site
-        when counting LEF positions.
-
-    Returns
-    -------
-    reads : int
-        Total number of LEF heads located within ±window_size
-        of the CTCF sites across all replicas.
-
-    Notes
-    -----
-    - CTCF positions listed in `lst` are expanded across all replicas.
-    - The function counts *both* left and right LEF heads.
-    - Uses a histogram over the full lattice to efficiently count encounters.
-    """
-    rep = paramdict['number_of_replica'] 
-    mon = paramdict['monomers_per_replica']
-    site = paramdict['sites_per_monomer']
-    mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
-    lst_t = []
-    for i in range(rep):
-        lst_t += list(np.array(lst)+i*mon*site)
-    lef_lefts = lefs_array[:,:,0].flatten()
-    lef_rights = lefs_array[:,:,1].flatten()
-    lef_positions = np.hstack((lef_lefts,lef_rights))
-    peak_monomers = peak_positions(lst_t, window_sizes = np.arange(-window_size, (window_size)+1))
-    num_sites_t = mapN*rep
-    hist,edges = np.histogram(  lef_positions  , np.arange(num_sites_t+1) )
-    reads = np.sum(hist[peak_monomers])
-    return reads
 
 def peak_ratio_around(num_sites_t, lef_positions, peak_positions, neighbor_size):
     """
