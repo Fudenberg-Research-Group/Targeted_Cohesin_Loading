@@ -3,7 +3,7 @@ import io
 from setuptools import setup, find_packages
 
 VERSION = "0.1.0"
-DESCRIPTION = "Dynamic barriers lattice translocators for loop extrusion simulations"
+DESCRIPTION = "Targeted Cohesin Loading with Dynamic Barriers for Chromatin Loop Extrusion Simulations"
 
 
 def _read(*parts, **kwargs):
@@ -25,11 +25,11 @@ def get_requirements(path):
 install_requires = get_requirements("requirements.txt")
 
 setup(
-    name="Target_cohesin_loading",
+    name="Targeted_cohesin_loading",
     version=VERSION,
     description=DESCRIPTION,
-    #url="https://github.com/Fudenberg-Research-Group/Target_cohesin_loading",
-    url="https://github.com/hrahmanin/Target_cohesin_loading/",
+    url="https://github.com/Fudenberg-Research-Group/Targeted_cohesin_loading",
+    #url="https://github.com/hrahmanin/Target_cohesin_loading/",
     author="Hadi Rahmaninejad",
     author_email="rahmanin@usc.edu",
     license="MIT",

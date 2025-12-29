@@ -58,9 +58,9 @@ PARAMDICT_md['restartSimulationEveryBlocks']=100
 PARAMDICT_md['steps'] = 20
 import sys
 import ast
-
-#filename = sys.argv[-1]
-filename = 'folder_face_1.0_back_0.0_Clife_300_Cof_180_life_660.0_slife_660.0_birth_0.1_pause_0.9_sep_25_site_10_replica_10_vel_1_steps_20'
+# Get filename from command-line argument (the format is provided in the following lines)
+filename = sys.argv[-1] if len(sys.argv) > 1 else default_filename
+default_filename_ = 'folder_face_1.0_back_0.0_Clife_300_Cof_180_life_660.0_slife_660.0_birth_0.1_pause_0.9_sep_25_site_10_replica_10_vel_1_steps_20'
 #print('this is file name %s'%filename)
 
 params=[ast.literal_eval(i) for i in filename.split('folder_')[1].split('_')[1::2]]

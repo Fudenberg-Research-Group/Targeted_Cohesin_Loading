@@ -1,29 +1,26 @@
 import sys
 import os
 import json
-import bioframe
 from config import *
 import pandas as pd
 import h5py
 from scipy.stats import truncnorm
 import matplotlib.pylab as plt
 import numpy as np
-from OccupancyInputCTCF.utils.analysis import calculate_frip
 from cooltools.lib.numutils import adaptive_coarsegrain
 import multiprocessing as mp
 from functools import partial
 # Add custom library path
 sys.path.append('/home1/rahmanin/start/polychrom/projects/Site_wise_occupancy/OccupancyInputCTCF/')
 
-# Import utility modules
-import OccupancyInputCTCF.utils as util
-import OccupancyInputCTCF.utils.plots as mplot
-import OccupancyInputCTCF.utils.convert as convert
-import OccupancyInputCTCF.utils.ml as ml
-import OccupancyInputCTCF.utils.makeparams as params
-import OccupancyInputCTCF.utils.One_d_simulation as simulation
-import OccupancyInputCTCF.utils.md_simulation as mdsimulation
-import OccupancyInputCTCF.utils.cmap_utils as utils_s
+# Import utility modules Targeted_cohesin_loading
+import Targeted_cohesin_loading.plots as mplot
+import Targeted_cohesin_loading.convert as convert
+import Targeted_cohesin_loading.makeparams as params
+import Targeted_cohesin_loading.One_d_simulation as simulation
+import Targeted_cohesin_loading.md_simulation as mdsimulation
+import Targeted_cohesin_loading.cmap_utils as utils_s
+import Targeted_cohesin_loading.QuantMetrics as QuantMetrics
 import warnings
 warnings.filterwarnings('ignore')
 import time
@@ -58,11 +55,11 @@ print("Step 1 complete. Output:", ctcf_bed_df)
 #print("Step 4 complete. Right barriers:", CTCF_right_positions, "Left barriers:", CTCF_left_positions)
 
 ##### adding the random implementation ######
-genome_length = 3*2.7 # Gbp
-tot_motifs = 55073
-occup_mean = 0.33182353
-ctcf_tot_number = 217000
-bound_fraction = 0.5
+genome_length = 3*2.7 # Gbp , the total genome length with averagely 3 copies
+tot_motifs = 55073 # Total number of CTCF motifs from JASPAR
+occup_mean = 0.33182353 # Average of CTCF site occupancy from Sonmezer data
+ctcf_tot_number = 217000 # Paper cited in manuscript, method section
+bound_fraction = 0.5 # Paper cited in manuscript, method section
 occup_mean_p = (ctcf_tot_number/3)*bound_fraction/tot_motifs
 multiplication = occup_mean_p/occup_mean
 ctcf_per_10_meg = (10*1e6 / (genome_length *1e9) * bound_fraction * ctcf_tot_number) / occup_mean
@@ -92,10 +89,10 @@ bind_freqs_pivot = bind_freqs_dtf.pivot_table(index='TFBS_cluster', columns='bio
 bind_freqs_pivot.reset_index(inplace=True)
 bind_freqs_pivot = bind_freqs_pivot[['TFBS_cluster','Accessible','Bound', 'Nucleosome.occupied']]
 states = bind_freqs['biological.state'].unique()
-#bind_freqs_pivot
 binds_sites_freqs = pd.merge(bind_sites_revised, bind_freqs_pivot, on='TFBS_cluster', how='left')
 binds_sites_freqs.to_csv('sites_with_freqs.tsv',sep='\t')
 binds_sites_freqs
+
 ### making labels
 frequency_columns = ['Accessible', 'Bound', 'Nucleosome.occupied']
 
@@ -263,40 +260,23 @@ mplot.plot_chip_hic(REGION, whole_chip, whole_chip_ctcf, whole_map, res= 200000,
 print("Step 8 complete. Output at", output_file)
 
 
-def Calculate_EOC_reads(paramdict, lefs_array, lst, window_size):
-    rep = paramdict['number_of_replica'] 
-    mon = paramdict['monomers_per_replica']
-    site = paramdict['sites_per_monomer']
-    mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
-    lst_t = []
-    for i in range(rep):
-        lst_t += list(np.array(lst)+i*mon*site)
-    lef_lefts = lefs_array[:,:,0].flatten()
-    lef_rights = lefs_array[:,:,1].flatten()
-    lef_positions = np.hstack((lef_lefts,lef_rights))
-    peak_monomers = utils_s.peak_positions(lst_t, window_sizes = np.arange(-window_size, (window_size)+1))
-    num_sites_t = mapN*rep
-    hist,edges = np.histogram(  lef_positions  , np.arange(num_sites_t+1) )
-    reads = np.sum(hist[peak_monomers])
-    return reads
-
 ctcf_occup = ctcf_lifetime_list/ (ctcf_lifetime_list+ctcf_offtime_list)
 traj = lefs_array.shape[0]
 ctcf_reads = ctcf_occup*traj
 ctcf_reads
 
 
-file = open(OUTPUT_FILE_READS,'w')
-file.write('Rad21,ctcf\n')
-for i in range(len(ctcf_loc_list)):
-    lst_e = [ctcf_loc_list[i]]
-    reads = Calculate_EOC_reads(PARAMDICT, lefs_array, lst_e, WINDOW_SIZE)
-    reads_per_ctcf = reads/ctcf_reads[i]
-    file.write('%s,%s\n'%(reads,ctcf_reads[i]))
-file.close()
+with open(OUTPUT_FILE_READS, 'w') as file:
+    file.write('Rad21,ctcf\n')
 
+    for i in range(len(ctcf_loc_list)):
+        lst_e = [ctcf_loc_list[i]]
+        reads = utils.Calculate_EOC_reads(PARAMDICT, lefs_array, lst_e, WINDOW_SIZE)
 
+        reads_per_ctcf = reads / ctcf_reads[i]
 
+        # If you want the raw reads and ctcf_reads:
+        file.write(f'{reads},{ctcf_reads[i]}\n')
 
 
 

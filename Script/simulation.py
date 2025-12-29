@@ -25,9 +25,10 @@ import pandas as pd
 # ===============================
 # Project-Specific Imports
 # ===============================
-from Target_cohesin_loading.lattice_translocators import LEFTranslocator, LEFTranslocatorDynamicBoundary
-import Target_cohesin_loading.funcs as funcs
-from Target_cohesin_loading.funcs import *
+from Targeted_cohesin_loading.lattice_translocators import LEFTranslocator, LEFTranslocatorDynamicBoundary
+# import the functions here
+import Targeted_cohesin_loading.funcs as funcs
+from funcs import *
 
 # ===============================
 # Cooltools for Hi-C Analysis
@@ -47,9 +48,9 @@ from polychrom.simulation import Simulation
 from polychrom.starting_conformations import grow_cubic
 
 
-# Get filename from command-line argument
-#filename = sys.argv[-1]
-filename = 'folder_face_1.0_back_0_Clife_191.9_Cof_17.0_life_66.0_slife_66.0_birth_0.1_base_0.0001_targetsnum_16_deltactcf_4600_pause_0.0_ipause_0.985_sep_74_site_10_monomer_1000_replica_1_steps_200.0_vel_1'
+# Get filename from command-line argument (the format is provided in the following lines)
+filename = sys.argv[-1] if len(sys.argv) > 1 else default_filename
+default_filename_ = 'folder_face_1.0_back_0_Clife_191.9_Cof_17.0_life_66.0_slife_66.0_birth_0.1_base_0.0001_targetsnum_16_deltactcf_4600_pause_0.0_ipause_0.985_sep_74_site_10_monomer_1000_replica_1_steps_200.0_vel_1'
 
 print(f'This is file name: {filename}')
 
