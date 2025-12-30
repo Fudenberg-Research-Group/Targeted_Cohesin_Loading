@@ -4,19 +4,19 @@ import chromoscores.scorefunctions as chrscores
 from scipy.stats import pearsonr
 import numpy as np
 
-def assign_lattice_positions(dataframe, region, lattice_size=250):
+def assign_lattice_positions(peaks_df, region, lattice_size=250):
     """
     Extract and annotate genomic entries within a specified region.
 
-    This function selects rows from a genomic dataframe that fall inside a
+    This function selects rows from a genomic dataframe (peaks_df) that fall inside a
     region string (e.g., 'chr1:100000-200000'), computes the midpoint of each
-    interval, and assigns each entry to a lattice/bin index based on a chosen
-    lattice size. It is useful for mapping genomic coordinates onto simulation
+    interval, and assigns each entry to a lattice/bin index based on a chosen lattice
+    size. It is useful for mapping genomic coordinates onto simulation
     lattice coordinates.
 
     Parameters
     ----------
-    dataframe : pandas.DataFrame
+    peaks_df : pandas.DataFrame
         Genomic table containing at least 'chrom', 'start', and 'end'
         columns. Additional columns are preserved but not modified.
     region : str
@@ -41,7 +41,7 @@ def assign_lattice_positions(dataframe, region, lattice_size=250):
     - Returned indices are zero-based lattice coordinates.
     """
     region_start = bioframe.parse_region_string(region)[1]
-    region_dataframe = bioframe.select(dataframe, region, cols=['chrom', 'start', 'end'])
+    region_dataframe = bioframe.select(peaks_df, region, cols=['chrom', 'start', 'end'])
     region_dataframe['mid'] = (region_dataframe.end + region_dataframe.start) / 2
     region_dataframe['lattice_loc'] = ((region_dataframe['mid'] - region_start) // lattice_size).astype(int)
     region_dataframe = region_dataframe.reset_index(drop=True)
@@ -81,7 +81,7 @@ def fraction_of_reads_in_peaks(paramdict, lefs_array, peaklist, window_size):
 
     Notes
     -----
-    - CTCF positions listed in `lst` are expanded across all replicas.
+    - CTCF positions listed in `peaklist` are expanded across all replicas.
     - The function counts *both* left and right LEF heads.
     - Uses a histogram over the full lattice to efficiently count encounters.
     """
@@ -89,13 +89,12 @@ def fraction_of_reads_in_peaks(paramdict, lefs_array, peaklist, window_size):
     mon = paramdict['monomers_per_replica']
     site = paramdict['sites_per_monomer']
     mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
-    lst_t = []
-    for i in range(rep):
-        lst_t += list(np.array(peaklist)+i*mon*site)
+
+    peaklist_total = (peaklist + np.arange(rep)[:, None] * mon * site).ravel()
     lef_lefts = lefs_array[:,:,0].flatten()
     lef_rights = lefs_array[:,:,1].flatten()
     lef_positions = np.hstack((lef_lefts,lef_rights))
-    peak_monomers = peak_positions(lst_t, window_sizes = np.arange(-window_size, (window_size)+1))
+    peak_monomers = peak_positions(peaklist_total, window_sizes = np.arange(-window_size, (window_size)+1))
     num_sites_t = mapN*rep
     hist,edges = np.histogram(  lef_positions  , np.arange(num_sites_t+1) )
     return np.sum(hist[peak_positions]) / len(lef_positions)
@@ -133,7 +132,7 @@ def number_of_reads_per_peaks(paramdict, lefs_array, peaklist, window_size):
 
     Notes
     -----
-    - CTCF positions listed in `lst` are expanded across all replicas.
+    - CTCF positions listed in `peaklist` are expanded across all replicas.
     - The function counts *both* left and right LEF heads.
     - Uses a histogram over the full lattice to efficiently count encounters.
     """
@@ -141,13 +140,11 @@ def number_of_reads_per_peaks(paramdict, lefs_array, peaklist, window_size):
     mon = paramdict['monomers_per_replica']
     site = paramdict['sites_per_monomer']
     mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
-    lst_t = []
-    for i in range(rep):
-        lst_t += list(np.array(peaklist)+i*mon*site)
+    peaklist_total = (peaklist + np.arange(rep)[:, None] * mon * site).ravel()
     lef_lefts = lefs_array[:,:,0].flatten()
     lef_rights = lefs_array[:,:,1].flatten()
     lef_positions = np.hstack((lef_lefts,lef_rights))
-    peak_monomers = peak_positions(lst_t, window_sizes = np.arange(-window_size, (window_size)+1))
+    peak_monomers = peak_positions(peaklist_total, window_sizes = np.arange(-window_size, (window_size)+1))
     num_sites_t = mapN*rep
     hist,edges = np.histogram(  lef_positions  , np.arange(num_sites_t+1) )
     reads = np.sum(hist[peak_monomers])
