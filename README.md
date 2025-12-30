@@ -1,6 +1,6 @@
 # Target chromatin loop extrusion with dynamic boundaries
 
-![Alt Text](Analysis/docs/animation/animationfigures/outputcombm.gif)
+![Alt Text](Analysis/docs/animation/outputcombm.gif)
 
 **Illustration**: This gif shows how extruders (yellow) load onto chromatin at target loci and begin extrusion, forming features in Hi-C contact maps under different scenarios. In the right panel, a wider loading region (indicated in blue) causes a ‘boundary’ to appear in the Hi-C contact map due to collisions between extruders that act as a ‘barrier’. In contrast, the scenario on the left produces a ‘fountain’-like pattern.
 <!--
