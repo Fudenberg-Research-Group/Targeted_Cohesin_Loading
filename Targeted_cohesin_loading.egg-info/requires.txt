@@ -1,0 +1,10 @@
+numpy
+matplotlib
+scipy
+pandas
+glob2
+h5py
+cooltools
+seaborn
+polychrom
+cooler

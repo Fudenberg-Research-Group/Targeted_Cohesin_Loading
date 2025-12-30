@@ -1,0 +1,8 @@
+LICENSE
+README.md
+setup.py
+Targeted_cohesin_loading.egg-info/PKG-INFO
+Targeted_cohesin_loading.egg-info/SOURCES.txt
+Targeted_cohesin_loading.egg-info/dependency_links.txt
+Targeted_cohesin_loading.egg-info/requires.txt
+Targeted_cohesin_loading.egg-info/top_level.txt
