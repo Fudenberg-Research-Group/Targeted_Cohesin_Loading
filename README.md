@@ -17,6 +17,7 @@ Preprint available here: <>
 The structure of this repository follows as below:
 - Analysis: notebooks and code for analyzing simulations and experimental data. This includes:  
   - Target Cohesin Loading: Single site, multiple site, domains targets, and target loading with association rate
+      - single  
   - Sequential Barriers: Tandem configuration of barriers  
   - Realistic Distribution of Barriers: Different scenarios with the random and regular configuration of barriers   
 - Scripts: codes for performing simulations, and quantitative analysis.The simulation.py represent the simulation script for the general case of boosted loading at the target (center of the lattice), with association rate (if there is a pause between landing on chromatin and extrusion state), and dynamic barriers (CTCFs) with adjustable binding and unbinding time.

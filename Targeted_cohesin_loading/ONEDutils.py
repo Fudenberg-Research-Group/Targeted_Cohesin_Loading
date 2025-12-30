@@ -48,7 +48,7 @@ def assign_lattice_positions(dataframe, region, lattice_size=250):
     return region_dataframe
 
 
-def fraction_of_reads_in_peaks(paramdict, lefs_array, lst, window_size):
+def fraction_of_reads_in_peaks(paramdict, lefs_array, peaklist, window_size):
         """
     Computes the relative number of LEF encounters (reads) around specified CTCF sites to the totla number of reads (Fraction of Reads in Peaks).
 
@@ -67,7 +67,7 @@ def fraction_of_reads_in_peaks(paramdict, lefs_array, lst, window_size):
         Array containing LEF head positions.
         lefs_array[:,:,0] = left heads
         lefs_array[:,:,1] = right heads
-    lst : list or array
+    peaklist : list or array
         Positions of CTCF sites in a single replica.
     window_size : int
         Number of lattice sites to include on each side of the CTCF site
@@ -91,7 +91,7 @@ def fraction_of_reads_in_peaks(paramdict, lefs_array, lst, window_size):
     mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
     lst_t = []
     for i in range(rep):
-        lst_t += list(np.array(lst)+i*mon*site)
+        lst_t += list(np.array(peaklist)+i*mon*site)
     lef_lefts = lefs_array[:,:,0].flatten()
     lef_rights = lefs_array[:,:,1].flatten()
     lef_positions = np.hstack((lef_lefts,lef_rights))
@@ -100,7 +100,7 @@ def fraction_of_reads_in_peaks(paramdict, lefs_array, lst, window_size):
     hist,edges = np.histogram(  lef_positions  , np.arange(num_sites_t+1) )
     return np.sum(hist[peak_positions]) / len(lef_positions)
 
-def number_of_reads_per_peaks(paramdict, lefs_array, lst, window_size):
+def number_of_reads_per_peaks(paramdict, lefs_array, peaklist, window_size):
         """
     Computes the total number of LEF encounters (reads) around specified CTCF sites (Extruders On CTCF).
 
@@ -119,7 +119,7 @@ def number_of_reads_per_peaks(paramdict, lefs_array, lst, window_size):
         Array containing LEF head positions.
         lefs_array[:,:,0] = left heads
         lefs_array[:,:,1] = right heads
-    lst : list or array
+    peaklist : list or array
         Positions of CTCF sites in a single replica.
     window_size : int
         Number of lattice sites to include on each side of the CTCF site
@@ -143,7 +143,7 @@ def number_of_reads_per_peaks(paramdict, lefs_array, lst, window_size):
     mapN = paramdict['monomers_per_replica']*paramdict['sites_per_monomer']
     lst_t = []
     for i in range(rep):
-        lst_t += list(np.array(lst)+i*mon*site)
+        lst_t += list(np.array(peaklist)+i*mon*site)
     lef_lefts = lefs_array[:,:,0].flatten()
     lef_rights = lefs_array[:,:,1].flatten()
     lef_positions = np.hstack((lef_lefts,lef_rights))
