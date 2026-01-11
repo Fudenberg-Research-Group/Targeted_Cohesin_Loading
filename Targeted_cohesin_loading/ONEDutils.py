@@ -49,7 +49,7 @@ def assign_lattice_positions(peaks_df, region, lattice_size=250):
 
 
 def fraction_of_reads_in_peaks(paramdict, lefs_array, peaklist, window_size):
-        """
+    """
     Computes the relative number of LEF encounters (reads) around specified CTCF sites to the totla number of reads (Fraction of Reads in Peaks).
 
     This function takes a list of CTCF positions for a single replica, expands them
@@ -100,7 +100,7 @@ def fraction_of_reads_in_peaks(paramdict, lefs_array, peaklist, window_size):
     return np.sum(hist[peak_positions]) / len(lef_positions)
 
 def number_of_reads_per_peaks(paramdict, lefs_array, peaklist, window_size):
-        """
+    """
     Computes the total number of LEF encounters (reads) around specified CTCF sites (Extruders On CTCF).
 
     This function takes a list of CTCF positions for a single replica, expands them
