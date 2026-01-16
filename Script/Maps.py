@@ -50,7 +50,24 @@ for name in path_dict.keys():
             mapN,
             cutoff=2.3, n=8)
         map_dict_eq[name] = mrc
-        np.savez_compressed('./mapsnew/%s.npz' % (name), mrc) 
+        np.savez_compressed('./maps/%s.npz' % (name), mrc) 
+        #saving data as .cool files
+        cool_uri = ('./maps/maps_points_cools/%s.mcool'%name)
+        mrc_new = cms.coolify(mrc,
+                cool_uri,
+                chrom_dict={},
+                binsize=2500,
+                chunksize=10000000)
+        
+        clr = cooler.Cooler(cool_uri+'.2500.cool')
+        # Saving maps in 10 kb resolutions
+
+        clr = cooler.Cooler(cool_uri+'.2500.cool')
+        base_uri =cool_uri+'.2500.cool'
+        output_uri = cool_uri+'.10000.cool'
+        factor = 4
+        chunksize=10000000
+        clr_10=cooler.coarsen_cooler(base_uri,output_uri,factor,chunksize)#columns:
     except Exception as e:
         erfile.write('%s\n'%name)
         print(f"An error occurred with {name}: {e}")
