@@ -1,0 +1,9 @@
+Metadata-Version: 2.1
+Name: Targeted-cohesin-loading
+Version: 0.1.0
+Summary: Targeted Cohesin Loading with Dynamic Barriers for Chromatin Loop Extrusion Simulations
+Home-page: https://github.com/Fudenberg-Research-Group/Targeted_cohesin_loading
+Author: Hadi Rahmaninejad
+Author-email: rahmanin@usc.edu
+License: MIT
+License-File: LICENSE

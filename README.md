@@ -1,6 +1,6 @@
 # Target chromatin loop extrusion with dynamic boundaries
 
-![Alt Text](Analysis/output/output_cropped_.gif)
+![Alt Text](docs/animation/outputcombm.gif)
 
 **Illustration**: This gif shows how extruders (yellow) load onto chromatin at target loci and begin extrusion, forming features in Hi-C contact maps under different scenarios. In the right panel, a wider loading region (indicated in blue) causes a ‘boundary’ to appear in the Hi-C contact map due to collisions between extruders that act as a ‘barrier’. In contrast, the scenario on the left produces a ‘fountain’-like pattern.
 <!--
@@ -16,7 +16,14 @@ Preprint available here: <>
 ### Structure of the repository
 The structure of this repository follows as below:
 - Analysis: notebooks and code for analyzing simulations and experimental data. This includes:  
-  - Target Cohesin Loading: Single site, multiple site, domains targets, and target loading with association rate  
+  - Target Cohesin Loading: Single site, multiple site, domains targets, and target loading with association rate. Scenarions:
+      - single_site_onloading: a single genomic site (one 250 bp site) has an increased probability of cohesin loading, while loading at all other sites on chromatin is set uniformly.
+
+      - target_domain_sites: a contiguous domain of targeted loading located between convergent barriers, with uniform loading outside the domain.
+
+      - target_multi_sitenumber: multiple discrete genomic sites (n × 250 bp sites) have an increased loading probability, while all remaining sites have uniform loading.
+
+      - target_multi_site_pause: multiple sites have increased loading probability, with an engagement pause between initial binding to chromatin and the onset of extrusion.
   - Sequential Barriers: Tandem configuration of barriers  
   - Realistic Distribution of Barriers: Different scenarios with the random and regular configuration of barriers   
 - Scripts: codes for performing simulations, and quantitative analysis.The simulation.py represent the simulation script for the general case of boosted loading at the target (center of the lattice), with association rate (if there is a pause between landing on chromatin and extrusion state), and dynamic barriers (CTCFs) with adjustable binding and unbinding time.
