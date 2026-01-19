@@ -127,8 +127,8 @@ CTCF_offtime = paramdict_CTCF['CTCF_offtime']
 #print(CTCF_offtime[typedict['strong_CTCF']], CTCF_offtime[typedict['weak_CTCF']])
 
 # Create some CTCF boundary sites
-CTCF_right_positions = np.array([3501+deltacoh, 3501+deltacoh+(deltactcf//2)])
-CTCF_left_positions = np.array([3501-deltacoh])
+CTCF_right_positions = np.array([3501+deltacoh, 3501+deltacoh+(deltactcf//2)],dtype=int)
+CTCF_left_positions = np.array([],dtype=int)
 CTCF_sites_right = CTCF_right_positions
 CTCF_sites_left = CTCF_left_positions
 
